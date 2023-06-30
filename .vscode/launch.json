@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug apigateway",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/apigateway/apigateway.go",
+            "showLog": true,
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+        {
+            "name": "Debug itemservice",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/itemservice/itemservice.go",
+            "showLog": true,
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+        {
+            "name": "Debug userservice",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/userservice/userservice.go",
+            "showLog": true,
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+        {
+            "name": "Debug frontendservice",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/frontendservice/frontendservice.go",
+            "showLog": true,
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+        {
+            "name": "Debug swaggerservice",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/swaggerservice/swaggerservice.go",
+            "showLog": true,
+            "internalConsoleOptions": "openOnSessionStart",
+        },
+    ]
+}

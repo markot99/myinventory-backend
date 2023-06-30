@@ -1,0 +1,46 @@
+
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Update swagger config",
+            "type": "shell",
+            "command": "export PATH=$(go env GOPATH)/bin:$PATH && swag init -g cmd/apigateway/apigateway.go",
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": "go test -p 1 ./... -cover",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Generate html coverage report",
+            "type": "shell",
+            "command": "go test -p 1 -v -coverpkg=./... -coverprofile=cover.out ./... && go tool cover -html cover.out -o cover.html && rm cover.out",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "Get test coverage",
+            "type": "shell",
+            "command": "go test -p 1 -coverprofile=coverage.out ./... ;    go tool cover -func=coverage.out",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        }
+    ]
+}

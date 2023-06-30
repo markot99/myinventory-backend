@@ -1,0 +1,75 @@
+version: '3'
+services:
+  apigateway:
+    build:
+      context: .
+      dockerfile: ./cmd/apigateway/Dockerfile
+    restart: always
+    environment:
+      - "FORWARD_1=http://userservice:8080;/api/v1/users"
+      - "FORWARD_2=http://itemservice:8080;/api/v1/items"
+      - "FORWARD_3=http://swaggerservice:8080;/api/swagger"
+      - "FORWARD_4=http://frontendservice:8080;/frontend"
+    ports:
+      - 8080:8080
+
+  itemservice:
+    build:
+      context: .
+      dockerfile: ./cmd/itemservice/Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      - "MONGO_DB_HOST=mongodb://mongodb:27017"
+      - "MONGO_DB_DATABASE=myinventory"
+      - "LOG_LEVEL=debug"
+    volumes:
+      - images:/images
+      - invoices:/invoices
+    restart: always
+
+  userservice:
+    build:
+      context: .
+      dockerfile: ./cmd/userservice/Dockerfile
+    depends_on:
+      - mongodb
+    environment:
+      - "MONGO_DB_HOST=mongodb://mongodb:27017"
+      - "MONGO_DB_DATABASE=myinventory"
+    restart: always
+
+  swaggerservice:
+    build:
+      context: .
+      dockerfile: ./cmd/swaggerservice/Dockerfile
+    restart: always
+
+  frontendservice:
+    build:
+      context: .
+      dockerfile: ./cmd/frontendservice/Dockerfile
+    restart: always
+
+  mongodb:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+  
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
+  images:
+  invoices:

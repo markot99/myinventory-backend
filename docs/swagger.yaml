@@ -1,0 +1,690 @@
+basePath: /api
+definitions:
+  api.APIErrorResponse:
+    properties:
+      diagnosisCode:
+        description: diagnosis code of the error
+        type: integer
+      diagnosisMessage:
+        description: diagnosis message of the error
+        type: string
+    type: object
+  imagecontroller.SetPreviewImageRequestBody:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  itemcontroller.AddItemPurchaseInfo:
+    properties:
+      date:
+        type: string
+      place:
+        type: string
+      quantity:
+        type: integer
+      unitPrice:
+        type: number
+    type: object
+  itemcontroller.AddItemRequestBody:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      purchaseInfo:
+        $ref: '#/definitions/itemcontroller.AddItemPurchaseInfo'
+    required:
+    - name
+    - purchaseInfo
+    type: object
+  itemcontroller.AddItemResponseBody:
+    properties:
+      id:
+        type: string
+    type: object
+  itemcontroller.GetItemsResponseBody:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/itemcontroller.ResponseItem'
+        type: array
+    type: object
+  itemcontroller.ResponseItem:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      previewImage:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.File:
+    properties:
+      fileName:
+        description: name of the file
+        type: string
+      id:
+        description: identification number of the file
+        type: string
+    type: object
+  models.Images:
+    properties:
+      images:
+        description: all images
+        items:
+          $ref: '#/definitions/models.File'
+        type: array
+      previewImage:
+        description: preview image name to be displayed first
+        type: string
+    type: object
+  models.Item:
+    properties:
+      description:
+        description: description of the item
+        type: string
+      id:
+        description: identification number of the item
+        type: string
+      images:
+        allOf:
+        - $ref: '#/definitions/models.Images'
+        description: images of the item
+      name:
+        description: name of the item
+        type: string
+      ownerID:
+        description: identification number of the owner of the item
+        type: string
+      purchaseInfo:
+        allOf:
+        - $ref: '#/definitions/models.PurchaseInfo'
+        description: purchase information of the item
+    type: object
+  models.PurchaseInfo:
+    properties:
+      date:
+        description: date of purchase
+        type: string
+      invoice:
+        allOf:
+        - $ref: '#/definitions/models.File'
+        description: invoice of the purchase
+      place:
+        description: place of purchase
+        type: string
+      quantity:
+        description: number of items purchased
+        type: integer
+      unitPrice:
+        description: price of a single item
+        type: number
+    type: object
+  usercontroller.LoginUserRequestBody:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  usercontroller.LoginUserResponseBody:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+      token:
+        type: string
+    type: object
+  usercontroller.MeResponseBody:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: string
+      lastName:
+        type: string
+    type: object
+  usercontroller.RegisterUserRequestBody:
+    properties:
+      email:
+        description: email of the user
+        type: string
+      firstName:
+        description: first name of the user
+        type: string
+      lastName:
+        description: last name of the user
+        type: string
+      password:
+        description: unhashed password of the user
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Swagger documentation to test the myInventory API
+  title: myInventory API
+  version: "1.0"
+paths:
+  /v1/items:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of items belongig to the user with reduced information
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/itemcontroller.GetItemsResponseBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Get a list of items
+      tags:
+      - items
+    post:
+      consumes:
+      - application/json
+      description: Add an item to the database
+      parameters:
+      - description: Item Body
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/itemcontroller.AddItemRequestBody'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/itemcontroller.AddItemResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Add an item
+      tags:
+      - items
+  /v1/items/:
+    put:
+      consumes:
+      - application/json
+      description: Edit an item in the database
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - description: Item Body
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/itemcontroller.AddItemRequestBody'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/itemcontroller.AddItemResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Edit an item
+      tags:
+      - items
+  /v1/items/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get detailed information about an item from the database
+      parameters:
+      - description: Object id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Item'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Get an item
+      tags:
+      - items
+  /v1/items/{itemID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an item from the database including invoice and all images
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+      security:
+      - JWT: []
+      summary: Delete an item
+      tags:
+      - items
+  /v1/items/{itemID}/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload one ore more images to the server and get their internal
+        ids
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - collectionFormat: csv
+        description: images of the item
+        in: formData
+        items:
+          type: file
+        name: images
+        required: true
+        type: array
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Upload images
+      tags:
+      - images
+  /v1/items/{itemID}/images/{imageID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an image from the item
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - description: image id
+        in: path
+        name: imageID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Image
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Delete an image
+      tags:
+      - images
+    get:
+      consumes:
+      - application/json
+      description: Get an image from the item
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - description: image id
+        in: path
+        name: imageID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Image
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Get an image
+      tags:
+      - images
+  /v1/items/{itemID}/images/preview:
+    put:
+      consumes:
+      - application/json
+      description: Set preview image for an item
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - description: Set Preview Image Name
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/imagecontroller.SetPreviewImageRequestBody'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Set preview image
+      tags:
+      - images
+  /v1/items/{itemID}/invoice:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the invoice from the item and from the storage
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Delete invoice
+      tags:
+      - invoice
+    get:
+      consumes:
+      - application/json
+      description: Get the invoice from the item
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Invoice
+          schema:
+            type: file
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Get invoice
+      tags:
+      - invoice
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload invoice to the item
+      parameters:
+      - description: item id
+        in: path
+        name: itemID
+        required: true
+        type: string
+      - description: invoice of the item
+        in: formData
+        name: invoice
+        required: true
+        type: file
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Upload invoice
+      tags:
+      - invoice
+  /v1/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user and retrieve an authorization token
+      parameters:
+      - description: Login Body
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/usercontroller.LoginUserRequestBody'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usercontroller.LoginUserResponseBody'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      summary: Login user
+      tags:
+      - users
+  /v1/users/me:
+    get:
+      description: Get user info about the logged in user
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usercontroller.MeResponseBody'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      security:
+      - JWT: []
+      summary: Get user
+      tags:
+      - users
+  /v1/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Registration Body
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/usercontroller.RegisterUserRequestBody'
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.APIErrorResponse'
+      summary: Register user
+      tags:
+      - users
+securityDefinitions:
+  JWT:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
